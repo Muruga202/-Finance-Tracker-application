@@ -4,6 +4,10 @@ const TransactionForm = ({ onAddTransaction }) => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('income');
+  const [category, setCategory] = useState('Other');
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState('monthly');
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = () => {
     if (!description.trim() || !amount || parseFloat(amount) <= 0) {
@@ -11,17 +15,28 @@ const TransactionForm = ({ onAddTransaction }) => {
       return;
     }
 
-    onAddTransaction({
+    const transaction = {
       id: Date.now(),
       description: description.trim(),
       amount: parseFloat(amount),
       type,
-      date: new Date().toLocaleDateString()
-    });
+      category,
+      date: new Date().toLocaleDateString(),
+      isRecurring,
+      frequency: isRecurring ? frequency : null,
+      startDate: isRecurring ? startDate : null,
+      nextDate: isRecurring ? startDate : null
+    };
+
+    onAddTransaction(transaction);
 
     setDescription('');
     setAmount('');
     setType('income');
+    setCategory('Other');
+    setIsRecurring(false);
+    setFrequency('monthly');
+    setStartDate(new Date().toISOString().split('T')[0]);
   };
 
   const handleKeyPress = (e) => {
@@ -90,6 +105,59 @@ const TransactionForm = ({ onAddTransaction }) => {
             </label>
           </div>
         </div>
+
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="form-input"
+          >
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Salary">Salary</option>
+            <option value="Bills">Bills</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            <input
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+            />
+            Recurring Transaction
+          </label>
+        </div>
+
+        {isRecurring && (
+          <>
+            <div className="form-group">
+              <label className="form-label">Frequency</label>
+              <select
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                className="form-input"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Start Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="form-input"
+              />
+            </div>
+          </>
+        )}
 
         <button onClick={handleSubmit} className="btn btn-primary">
           Add Transaction

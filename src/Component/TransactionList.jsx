@@ -25,6 +25,7 @@ const TransactionList = ({ transactions, onDeleteTransaction }) => {
             >
               <div className="transaction-details">
                 <p className="transaction-description">{transaction.description}</p>
+                <p className="transaction-category">{transaction.category}</p>
                 <p className="transaction-date">{transaction.date}</p>
               </div>
               
